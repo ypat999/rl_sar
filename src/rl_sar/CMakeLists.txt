@@ -72,18 +72,26 @@ if(NOT USE_CMAKE)
         find_package(joint_state_broadcaster REQUIRED)
         find_package(robot_state_publisher REQUIRED)
         find_package(rclcpp REQUIRED)
-        find_package(gazebo_ros REQUIRED)
+        find_package(gazebo_ros QUIET)
         find_package(std_msgs REQUIRED)
         find_package(robot_msgs REQUIRED)
         find_package(robot_joint_controller REQUIRED)
         find_package(rclpy REQUIRED)
-        find_package(gazebo_msgs REQUIRED)
+        find_package(gazebo_msgs QUIET)
         find_package(std_srvs REQUIRED)
         find_package(geometry_msgs REQUIRED)
+        if(gazebo_ros_FOUND AND gazebo_msgs_FOUND)
+            message(STATUS "Gazebo Classic found - full simulation support enabled")
+            add_compile_definitions(USE_GAZEBO_CLASSIC)
+        else()
+            message(WARNING "Gazebo Classic not found - simulation control (pause/unpause/reset) disabled")
+        endif()
         ament_package()
     endif()
-    add_compile_options(${GAZEBO_CXX_FLAGS})
-    find_package(gazebo REQUIRED)
+    if(gazebo_ros_FOUND)
+        add_compile_options(${GAZEBO_CXX_FLAGS})
+        find_package(gazebo REQUIRED)
+    endif()
 endif()
 
 # Inference Runtime
@@ -426,19 +434,24 @@ if(NOT USE_CMAKE)
     if($ENV{ROS_DISTRO} MATCHES "noetic")
         target_link_libraries(rl_sim ${catkin_LIBRARIES})
     elseif($ENV{ROS_DISTRO} MATCHES "foxy|humble")
-        ament_target_dependencies(rl_sim
+        set(RL_SIM_DEPENDENCIES
             joint_state_broadcaster
             robot_state_publisher
             rclcpp
-            gazebo_ros
             std_msgs
             robot_msgs
             robot_joint_controller
             rclpy
-            gazebo_msgs
             std_srvs
             geometry_msgs
         )
+        if(gazebo_ros_FOUND)
+            list(APPEND RL_SIM_DEPENDENCIES gazebo_ros)
+        endif()
+        if(gazebo_msgs_FOUND)
+            list(APPEND RL_SIM_DEPENDENCIES gazebo_msgs)
+        endif()
+        ament_target_dependencies(rl_sim ${RL_SIM_DEPENDENCIES})
         install(TARGETS rl_sim DESTINATION lib/${PROJECT_NAME})
     endif()
 endif()

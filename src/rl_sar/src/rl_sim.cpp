@@ -141,12 +141,14 @@ RL_Sim::RL_Sim(int argc, char **argv)
     );
 
     // service
+#ifdef USE_GAZEBO_CLASSIC
     this->gazebo_pause_physics_client = ros2_node->create_client<std_srvs::srv::Empty>("/pause_physics");
     this->gazebo_unpause_physics_client = ros2_node->create_client<std_srvs::srv::Empty>("/unpause_physics");
     this->gazebo_reset_world_client = ros2_node->create_client<std_srvs::srv::Empty>("/reset_world");
 
     auto empty_request = std::make_shared<std_srvs::srv::Empty::Request>();
     auto result = this->gazebo_reset_world_client->async_send_request(empty_request);
+#endif
 #endif
 
     // loop
@@ -324,7 +326,7 @@ void RL_Sim::RobotControl()
 #if defined(USE_ROS1)
         std_srvs::Empty empty;
         this->gazebo_reset_world_client.call(empty);
-#elif defined(USE_ROS2)
+#elif defined(USE_ROS2) && defined(USE_GAZEBO_CLASSIC)
         auto empty_request = std::make_shared<std_srvs::srv::Empty::Request>();
         auto result = this->gazebo_reset_world_client->async_send_request(empty_request);
 #endif
@@ -337,7 +339,7 @@ void RL_Sim::RobotControl()
 #if defined(USE_ROS1)
             std_srvs::Empty empty;
             this->gazebo_pause_physics_client.call(empty);
-#elif defined(USE_ROS2)
+#elif defined(USE_ROS2) && defined(USE_GAZEBO_CLASSIC)
             auto empty_request = std::make_shared<std_srvs::srv::Empty::Request>();
             auto result = this->gazebo_pause_physics_client->async_send_request(empty_request);
 #endif
@@ -348,7 +350,7 @@ void RL_Sim::RobotControl()
 #if defined(USE_ROS1)
             std_srvs::Empty empty;
             this->gazebo_unpause_physics_client.call(empty);
-#elif defined(USE_ROS2)
+#elif defined(USE_ROS2) && defined(USE_GAZEBO_CLASSIC)
             auto empty_request = std::make_shared<std_srvs::srv::Empty::Request>();
             auto result = this->gazebo_unpause_physics_client->async_send_request(empty_request);
 #endif

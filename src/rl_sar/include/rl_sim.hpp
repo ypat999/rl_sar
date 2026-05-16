@@ -108,9 +108,11 @@ private:
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_subscriber;
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_subscriber;
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_subscriber;
+#ifdef USE_GAZEBO_CLASSIC
     rclcpp::Client<std_srvs::srv::Empty>::SharedPtr gazebo_pause_physics_client;
     rclcpp::Client<std_srvs::srv::Empty>::SharedPtr gazebo_unpause_physics_client;
     rclcpp::Client<std_srvs::srv::Empty>::SharedPtr gazebo_reset_world_client;
+#endif
     rclcpp::Publisher<robot_msgs::msg::RobotCommand>::SharedPtr robot_command_publisher;
     rclcpp::Subscription<robot_msgs::msg::RobotState>::SharedPtr robot_state_subscriber;
     rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr param_client;
