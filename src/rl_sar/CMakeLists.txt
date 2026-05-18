@@ -80,6 +80,7 @@ if(NOT USE_CMAKE)
         find_package(gazebo_msgs QUIET)
         find_package(std_srvs REQUIRED)
         find_package(geometry_msgs REQUIRED)
+        find_package(controller_manager_msgs REQUIRED)
         if(gazebo_ros_FOUND AND gazebo_msgs_FOUND)
             message(STATUS "Gazebo Classic found - full simulation support enabled")
             add_compile_definitions(USE_GAZEBO_CLASSIC)
@@ -444,6 +445,7 @@ if(NOT USE_CMAKE)
             rclpy
             std_srvs
             geometry_msgs
+            controller_manager_msgs
         )
         if(gazebo_ros_FOUND)
             list(APPEND RL_SIM_DEPENDENCIES gazebo_ros)

@@ -17,6 +17,7 @@
     <depend>geometry_msgs</depend>
     <depend>robot_joint_controller</depend>
     <depend>controller_manager</depend>
+    <depend>controller_manager_msgs</depend>
     <depend>joint_state_controller</depend>
     <depend>robot_state_publisher</depend>
     <depend>rospy</depend>

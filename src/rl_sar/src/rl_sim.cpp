@@ -241,6 +241,27 @@ void RL_Sim::StartJointController(const std::string& ros_namespace, const std::v
 
         if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
         {
+            std::cout << LOGGER::WARNING << "Spawner returned non-zero, checking if controller is already active..." << std::endl;
+            auto list_client = ros2_node->create_client<controller_manager_msgs::srv::ListControllers>("/controller_manager/list_controllers");
+            if (list_client->wait_for_service(std::chrono::seconds(2)))
+            {
+                auto list_request = std::make_shared<controller_manager_msgs::srv::ListControllers::Request>();
+                auto list_future = list_client->async_send_request(list_request);
+                auto list_status = rclcpp::spin_until_future_complete(ros2_node->get_node_base_interface(), list_future, std::chrono::seconds(3));
+                if (list_status == rclcpp::FutureReturnCode::SUCCESS)
+                {
+                    auto list_result = list_future.get();
+                    for (const auto& ctrl : list_result->controller)
+                    {
+                        if (ctrl.name == "robot_joint_controller" && ctrl.state == "active")
+                        {
+                            std::cout << LOGGER::INFO << "robot_joint_controller is already active, skipping spawn" << std::endl;
+                            std::filesystem::remove(tmp_path);
+                            return;
+                        }
+                    }
+                }
+            }
             throw std::runtime_error("Failed to start joint controller");
         }
 

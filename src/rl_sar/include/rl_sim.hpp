@@ -43,6 +43,7 @@
 #include <geometry_msgs/msg/twist.hpp>
 #include <std_srvs/srv/empty.hpp>
 #include <rcl_interfaces/srv/get_parameters.hpp>
+#include <controller_manager_msgs/srv/list_controllers.hpp>
 #endif
 
 #include "matplotlibcpp.h"
